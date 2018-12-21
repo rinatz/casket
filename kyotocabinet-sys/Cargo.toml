@@ -1,0 +1,12 @@
+[package]
+name = "kyotocabinet-sys"
+version = "0.1.0"
+authors = ["Kenichiro IDA <ida.kenichiro@gmail.com>"]
+description = "libkyotocabinet bindings for Rust."
+repository = "https://github.com/rinatz/casket"
+homepage = "https://github.com/rinatz/casket"
+license = "MIT"
+edition = "2018"
+
+[build-dependencies]
+bindgen = "*"
