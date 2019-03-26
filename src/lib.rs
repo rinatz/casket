@@ -1,7 +1,8 @@
-use failure::{err_msg, format_err, Error, Fail};
 use std::ffi::{CStr, CString};
 use std::ops::Drop;
 use std::path::Path;
+
+use failure::{err_msg, format_err, Error, Fail};
 
 #[derive(Debug, Fail)]
 #[fail(display = "Kyoto Cabinet caused an error: {}({})", message, code)]
@@ -143,11 +144,8 @@ impl KyotoCabinet {
         }
     }
 
-    pub fn set<K: AsRef<[u8]>, V: AsRef<[u8]>>(&self, key: K, val: V) -> Result<()> {
+    pub fn set(&self, key: &[u8], val: &[u8]) -> Result<()> {
         unsafe {
-            let key = key.as_ref();
-            let val = val.as_ref();
-
             let ok = ffi::kcdbset(
                 self.db,
                 key.as_ptr() as _,
@@ -165,21 +163,22 @@ impl KyotoCabinet {
         }
     }
 
-    pub fn get<K: AsRef<[u8]>>(&self, key: K) -> Option<&[u8]> {
+    pub fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
         unsafe {
-            let key = key.as_ref();
             let mut len = 0usize;
-
             let ptr = ffi::kcdbget(self.db, key.as_ptr() as _, key.len(), &mut len);
 
             if ptr.is_null() {
                 return None;
             }
 
-            let val = CStr::from_ptr(ptr);
+            let mut val: Vec<u8> = Vec::with_capacity(len);
+            val.set_len(len);
+
+            std::ptr::copy(ptr as _, val.as_mut_ptr(), len);
             ffi::kcfree(ptr as _);
 
-            Some(val.to_bytes())
+            Some(val)
         }
     }
 }
@@ -203,8 +202,8 @@ mod tests {
         let db =
             KyotoCabinet::create(&path).expect(&format!("could not create db: {}", path.display()));
 
-        let key = &b"key";
-        let val = &b"val";
+        let key = b"key";
+        let val = b"val";
 
         db.set(key, val)
             .expect("could not set the pair of key and value");
