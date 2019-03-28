@@ -8,6 +8,7 @@ fn main() {
 
     let bindings = bindgen::Builder::default()
         .clang_arg("-std=c89")
+        .clang_arg("-I/usr/include/linux")
         .header("wrapper.h")
         .generate()
         .expect("Unable to generate bindings");
