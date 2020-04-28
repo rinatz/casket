@@ -1,10 +1,9 @@
 [package]
 name = "kyotocabinet-sys"
-version = "0.1.0"
-authors = ["Kenichiro IDA <ida.kenichiro@gmail.com>"]
+version = "0.2.0"
+authors = ["Ida Kenichiro <ida.kenichiro@gmail.com>"]
 description = "libkyotocabinet bindings for Rust."
 license = "MIT"
 edition = "2018"
 
 [build-dependencies]
-bindgen = "*"
