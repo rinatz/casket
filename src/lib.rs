@@ -195,7 +195,7 @@ mod tests {
     use tempfile::tempdir;
 
     #[test]
-    fn test_get() {
+    fn get() {
         let dir = tempdir().expect("could not create tempdir");
         let path = dir.path().join("test.kch");
 
