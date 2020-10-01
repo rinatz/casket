@@ -2,10 +2,11 @@ use std::ffi::{CStr, CString};
 use std::ops::Drop;
 use std::path::Path;
 
-use failure::{err_msg, format_err, Error, Fail};
+use anyhow::{anyhow, Result};
+use thiserror::Error;
 
-#[derive(Debug, Fail)]
-#[fail(display = "Kyoto Cabinet caused an error: {}({})", message, code)]
+#[derive(Debug, Error)]
+#[error("Kyoto Cabinet caused an error: {message:?}({code:?})")]
 pub struct KyotoCabinetError {
     message: String,
     code: i32,
@@ -25,8 +26,6 @@ impl KyotoCabinetError {
         }
     }
 }
-
-pub type Result<T> = std::result::Result<T, Error>;
 
 pub struct OpenOptions {
     mode: u32,
@@ -82,8 +81,8 @@ impl OpenOptions {
             let path = path
                 .as_ref()
                 .to_str()
-                .ok_or_else(|| format_err!("{}", path.as_ref().display()))
-                .and_then(|x| CString::new(x).map_err(|e| err_msg(e)))?;
+                .ok_or_else(|| anyhow!("{}", path.as_ref().display()))
+                .and_then(|x| CString::new(x).map_err(|e| anyhow!(e)))?;
 
             let db = ffi::kcdbnew();
             let ok = ffi::kcdbopen(db, path.as_ptr(), self.mode);
@@ -195,19 +194,19 @@ mod tests {
     use tempfile::tempdir;
 
     #[test]
-    fn get() {
-        let dir = tempdir().expect("could not create tempdir");
+    fn get() -> Result<()> {
+        let dir = tempdir()?;
         let path = dir.path().join("test.kch");
 
-        let db =
-            KyotoCabinet::create(&path).expect(&format!("could not create db: {}", path.display()));
+        let db = KyotoCabinet::create(&path)?;
 
         let key = b"key";
         let val = b"val";
 
-        db.set(key, val)
-            .expect("could not set the pair of key and value");
+        db.set(key, val)?;
 
-        assert_eq!(&db.get(key).expect("could not get the value"), val);
+        assert_eq!(&db.get(key).ok_or(anyhow!(""))?, val);
+
+        Ok(())
     }
 }

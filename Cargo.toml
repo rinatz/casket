@@ -1,14 +1,15 @@
 [package]
 name = "casket"
-version = "0.2.0"
-authors = ["Ida Kenichiro <ida.kenichiro@gmail.com>"]
+version = "0.3.0"
+authors = ["IDA Kenichiro <ida.kenichiro@gmail.com>"]
 description = "Kyoto Cabinet bindings for Rust."
 readme = "README.md"
 license = "MIT"
 edition = "2018"
 
 [dependencies]
-failure = "0.1.7"
+anyhow = "1.0.32"
+thiserror = "1.0.20"
 
 [dependencies.ffi]
 version = "*"
