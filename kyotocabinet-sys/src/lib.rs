@@ -37,6 +37,12 @@ extern "C" {
     pub fn kcdbemsg(db: *mut KCDB) -> *const c_char;
     pub fn kcdbecode(db: *mut KCDB) -> i32;
 
-    pub fn kcdbset(db: *mut KCDB, kbuf: *const c_char, ksiz: usize, vbuf: *const c_char, vsiz: usize) -> i32;
+    pub fn kcdbset(
+        db: *mut KCDB,
+        kbuf: *const c_char,
+        ksiz: usize,
+        vbuf: *const c_char,
+        vsiz: usize,
+    ) -> i32;
     pub fn kcdbget(db: *mut KCDB, kbuf: *const c_char, ksiz: usize, sp: *mut usize) -> *mut c_char;
 }
